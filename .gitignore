@@ -1,5 +1,7 @@
 .env
 .vscode/
 mlruns/
+test-results/
 __pycache__/
 *.pyc
+consolidated_document.*

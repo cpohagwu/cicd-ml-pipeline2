@@ -24,12 +24,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 4. Run Training & Validation Script
+      - name: 4. Run Tests & Log Pytest Results
+        run: |
+          mkdir -p test-results
+          set +e
+          python -m pytest -s tests --junitxml=test-results/pytest.xml
+          PYTEST_EXIT_CODE=$?
+          set -e
+          python log_to_mlflow.py --pytest-exit-code "$PYTEST_EXIT_CODE"
+          exit "$PYTEST_EXIT_CODE"
+
+      - name: 5. Run Training & Validation Script
         env:
           INFERENCE_COST_PER_1000: "0.001"
         run: python train.py
 
-      - name: 5. Upload MLflow Artifacts
+      - name: 6. Upload MLflow Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
